@@ -143,3 +143,40 @@ function loadRepoDetail(owner,name) {
         $('#ownerName').html("<strong>Owner:</strong> <a href='http://github.com/" + repo.owner.login + "'>" + repo.owner.login + "</a>");
 	});
 }
+
+
+///////////////////////////////
+// User in the favorite repos
+///////////////////////////////
+$(document).on("pageshow", "#favesHome", function(event) {
+	db.transaction(loadFavesDb, txError, txSuccess);
+});
+
+function loadFavesDb(tx) {
+	tx.executeSql("SELECT * FROM repos", [], txSuccessLoadFaves);
+}
+
+function txSuccessLoadFaves(tx, res) {
+	console.log("Read success");
+	
+	if (res.rows.length) {
+		var len = res.rows.length;
+		var repo;
+		for(var i=0; i<len; i++) {
+			repo = res.rows.item(i);
+			
+			console.log(repo);
+			
+			$("#savedItems").append("<li><a href='repo-derail?owner=" +
+									repo.user+"&name="+repo.name+"'><h4>" +
+									repo.name+"</h4><p>"+repo.user+"</p></a></li>");
+		}
+		$('#savedItems').listview('refresh');
+	}
+	else {
+		if (navigator.notification)
+            navigator.notification.alert("You haven't saved any favorites yet.", function(){
+				$.mobile.changePage("index.html");
+			});
+	}
+}
