@@ -11,6 +11,53 @@ function getUrlVars() {
     return vars;
 }
 
+var db;
+
+
+///////////////////////
+// DB function
+///////////////////////
+function createDb(tx) {
+	// Drop Table if exists
+	tx.executeSql("DROP TABLE IF EXISTS repos");
+	// Create Table
+	tx.executeSql("CREATE TABLE repos(user, name)");
+}
+
+// If Error occurs
+function txError(error) { console.log(error); console.log("Database error: " + error); }
+
+// If Success
+function txSuccess() { console.log("Success"); }
+
+
+// Save repo as favorite
+function saveFave() {
+    db = window.openDatabase("repodb","0.1","GitHub Repo Db", 1000);
+    db.transaction(saveFaveDb, txError, txSuccessFave);
+}
+
+// Save repo
+function saveFaveDb(tx) {
+	urlVars = getUrlVars();
+    var owner = urlVars.owner;
+    var name = urlVars.name;
+	// Insert new row in column
+    tx.executeSql("INSERT INTO repos(user, name) VALUES (?, ?)",[owner,name]);
+}
+
+// Save Success
+function txSuccessFave() { console.log("Save success"); disableSaveButton(); }
+
+function disableSaveButton() {
+    // change the button text and style
+    var ctx = $("#saveBtn").closest(".ui-btn");
+	// Change style
+    $('span.ui-btn-text',ctx).text("Saved").closest(".ui-btn-inner").addClass("ui-btn-up-b");
+
+	// Remove handle
+    $("#saveBtn").unbind("click", saveFave);
+}
 
 ///////////////////////////
 // User in the main page
@@ -18,7 +65,11 @@ function getUrlVars() {
 $('#reposHome').bind('pageinit', function(event) {
 	// load repos
 	loadRepos();
+	// open Database
+	db = window.openDatabase("repodb", "0.1","GitHub Repo Db", 1000);
+	db.transaction(createDb, txError, txSuccess);
 });
+
 
 // load repos from gihub
 function loadRepos() {
@@ -35,7 +86,6 @@ function loadRepos() {
     });
 }
 
-
 /////////////////////////////////
 // User in the repo details page
 /////////////////////////////////
@@ -44,7 +94,34 @@ $(document).on('pageshow', '#reposDetail', function(event) {
     var owner = urlVars.owner;
     var name = urlVars.name;
     loadRepoDetail(owner,name);
+	// handle click
+	$("#saveBtn").bind("click", saveFave);
+	// check if the repo is a favorite repo
+	checkFave();
 });
+
+// Check if the repo is a favorite repo
+function checkFave() {
+	db.transaction(checkFaveDb, txError);
+}
+
+function checkFaveDb(tx) {
+	urlVars = getUrlVars();
+	
+	owner = urlVars.owner;
+	name = urlVars.name;
+	
+	// Get table entity
+	tx.executeSql("SELECT * FROM repos WHERE user = ? AND name = ?", [owner, name], txSuccessCheckFave);
+}
+
+function txSuccessCheckFave(tx,results) {
+    console.log("Read success");
+    console.log(results);
+
+    if (results.rows.length)
+         disableSaveButton();
+}
 
 // load repo details
 function loadRepoDetail(owner,name) {
