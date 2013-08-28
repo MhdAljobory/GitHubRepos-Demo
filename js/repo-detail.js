@@ -38,7 +38,43 @@ function disableSaveButton() {
 
 	// Remove handle
     $("#saveBtn").unbind("click", saveFave);
+	// Remove handle
+	$("#saveBtn").bind("click", unsaveFave);
 }
+
+// Unsave repo from favorite
+function unsaveFave() {
+	db.transaction(unsaveFaveDb, txError, txSuccessNotFave);
+}
+
+// delete saved repo from DB
+function unsaveFaveDb(tx) {
+	urlVars = getUrlVars();
+    var owner = urlVars.owner;
+    var name = urlVars.name;
+	// Delete row
+	tx.executeSql("DELETE FROM repos WHERE user = ? AND name = ?", [owner, name]);
+}
+
+// Unsaved success
+function txSuccessNotFave() { 
+	console.log("Unsave success");
+	enableSaveButton(); 
+}
+
+// Change button style
+function enableSaveButton() {
+	// change the button text and style
+	var ctx = $("#saveBtn").closest(".ui-btn");
+	// Change style
+	$('span.ui-btn-text',ctx).text("Favorite").closest(".ui-btn-inner").removeClass("ui-btn-up-b");
+
+	// Remove handle
+	$("#saveBtn").unbind("click", unsaveFave);
+	// Remove handle
+	$("#saveBtn").bind("click", saveFave);
+}
+
 
 // Check if the repo is a favorite repo
 function checkFave() {
