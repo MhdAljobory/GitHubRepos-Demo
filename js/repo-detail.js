@@ -34,7 +34,7 @@ function disableSaveButton() {
     // change the button text and style
     var ctx = $("#saveBtn").closest(".ui-btn");
 	// Change style
-    $('span.ui-btn-text',ctx).text("Saved").closest(".ui-btn-inner").addClass("ui-btn-up-b");
+    $('span.ui-btn-text',ctx).text("Unsaved").closest(".ui-btn-inner").addClass("ui-btn-up-b");
 
 	// Remove handle
     $("#saveBtn").unbind("click", saveFave);
