@@ -1,15 +1,23 @@
 <html>
 	<head></head>
 	<body>
-		<div id="favesHome" data-role="page" data-add-back-btn="true">
+
+		<div id="favesHome" data-role="page">
 			<div data-role="header">
-				<h3>Favorite Repos</h3>
+				<h3>Github Repos</h3>
+				<div data-role="navbar" data-iconpos="left">
+					<ul>
+						<li><a href="index.html" data-icon="home">All Repos</a></li>
+						<li><a href="faves.html" data-icon="star" class="ui-btn-active ui-state-persist">Favorites</a></li>
+					</ul>
+				</div>
 			</div>
-			
 			<div data-role="content">
 				<ul id="savedItems" data-role="listview"  data-filter="true">
 				</ul>
 			</div>
+		
 		</div>
+
 	</body>
 </html>

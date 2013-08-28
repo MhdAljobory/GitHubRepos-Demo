@@ -62,6 +62,7 @@ function disableSaveButton() {
 ///////////////////////////
 // User in the main page
 ///////////////////////////
+//$(document).on('pageshow', '#reposHome', function(event) {
 $('#reposHome').bind('pageinit', function(event) {
 	// load repos
 	loadRepos();
@@ -78,7 +79,7 @@ function loadRepos() {
         var i, repo;
 		// foreach repo add li
         $.each(data.repositories, function (i, repo) {
-            $("#allRepos").append("<li><a href='repo-detail.html?owner=" + repo.username + "&name=" + repo.name + "'>"
+            $("#allRepos").append("<li><a data-transition='slide' href='repo-detail.html?owner=" + repo.username + "&name=" + repo.name + "'>"
             + "<h4>" + repo.name + "</h4>"
             + "<p>" + repo.username + "</p></a></li>");
         });
@@ -167,7 +168,7 @@ function txSuccessLoadFaves(tx, res) {
 			
 			console.log(repo);
 			
-			$("#savedItems").append("<li><a href='repo-derail?owner=" +
+			$("#savedItems").append("<li><a data-transition='slide' href='repo-detail.html?owner=" +
 									repo.user+"&name="+repo.name+"'><h4>" +
 									repo.name+"</h4><p>"+repo.user+"</p></a></li>");
 		}
